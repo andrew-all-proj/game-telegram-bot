@@ -1,0 +1,21 @@
+{
+  "name": "y",
+  "version": "y",
+  "main": "src/index.js",
+  "repository": "git@github.com:andrew-all-proj/game-telegram-bot.git",
+  "author": "Andrew <andrew.publik.mail@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+  "start": "nodemon --watch src --ext ts --exec ts-node src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "grammy": "^1.35.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.2"
+  }
+}
