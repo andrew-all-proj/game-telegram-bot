@@ -1,24 +1,32 @@
-import { Bot } from "grammy";
-import * as dotenv from "dotenv";
+import { Bot, GrammyError, HttpError } from 'grammy'
+import config from './config'
+import { startCommand } from './commands/start'
+import { helpCommand } from './commands/help'
 
-dotenv.config();
+const bot = new Bot(config.botToken)
 
-if (!process.env.BOT_TOKEN) {
-  throw new Error("BOT_TOKEN не указан в .env");
-}
+bot.api.setMyCommands([
+   { command: 'start', description: 'Запустить бота' },
+   { command: 'help', description: 'Помощь' },
+])
 
-const bot = new Bot(process.env.BOT_TOKEN);
+bot.command('start', startCommand)
+bot.command('help', helpCommand)
 
-bot.command("start", async (ctx) => {
-  await ctx.reply(`👋 Привет! Я бот, для игры "Профессор Генезис"`);
-});
+bot.on('message:text', async (ctx) => {
+   await ctx.reply(`🔁 Ты написал: ${ctx.message.text}`)
+})
 
-bot.command("help", async (ctx) => {
-  await ctx.reply("✏️ Напиши любое сообщение — я повторю его тебе!");
-});
+bot.catch((err) => {
+   const error = err.ctx
 
-bot.on("message:text", async (ctx) => {
-  await ctx.reply(`🔁 Ты написал: ${ctx.message.text}`);
-});
+   if (error instanceof GrammyError) {
+      console.error('Error in request:', error.description)
+   } else if (error instanceof HttpError) {
+      console.error('Could not to telegram', error)
+   } else {
+      console.error('Unknown error', error)
+   }
+})
 
-bot.start();
+bot.start()

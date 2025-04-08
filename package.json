@@ -1,21 +1,29 @@
 {
-  "name": "y",
-  "version": "y",
+  "name": "game-telegram-bot",
+  "version": "0.0.1",
   "main": "src/index.js",
   "repository": "git@github.com:andrew-all-proj/game-telegram-bot.git",
   "author": "Andrew <andrew.publik.mail@gmail.com>",
   "license": "MIT",
   "scripts": {
-  "start": "nodemon --watch src --ext ts --exec ts-node src/index.ts"
+    "build": "tsc",
+    "start": "nodemon --watch src --ext ts --exec \"tsc && node dist/index.js\"",
+    "format": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
     "grammy": "^1.35.1",
-    "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2"
+    "nodemon": "^3.1.9"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "typescript": "^5.8.2"
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2",
+    "ts-node": "^10.9.2"
   }
 }
