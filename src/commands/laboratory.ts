@@ -1,0 +1,22 @@
+import { Context } from 'grammy'
+
+export const laboratoryCommand = async (ctx: Context) => {
+   try {
+      await ctx.reply('Профессор! Открываем лабораторию...', {
+         reply_markup: {
+            inline_keyboard: [
+               [
+                  {
+                     text: '🧪 Открыть лабораторию',
+                     web_app: {
+                        url: 'https://game.managetlg.com',
+                     },
+                  },
+               ],
+            ],
+         },
+      })
+   } catch (error) {
+      console.error('Reply error:', error)
+   }
+}
