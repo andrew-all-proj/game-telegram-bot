@@ -1,4 +1,5 @@
 import { Context } from 'grammy'
+import config from '../config'
 
 export const laboratoryCommand = async (ctx: Context) => {
    try {
@@ -9,7 +10,7 @@ export const laboratoryCommand = async (ctx: Context) => {
                   {
                      text: '🧪 Открыть лабораторию',
                      web_app: {
-                        url: 'https://game.managetlg.com',
+                        url: config.urlWebApp,
                      },
                   },
                ],

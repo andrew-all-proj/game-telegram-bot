@@ -26,12 +26,12 @@ bot.catch((err) => {
 
 async function main() {
    try {
-      // await bot.api.setMyCommands([
-      //    { command: 'start', description: 'Запустить бота' },
-      //    { command: 'help', description: 'Помощь' },
-      //    { command: 'laboratory', description: 'Лаборатория' },
-      //    { command: 'fight', description: 'Бой на Арене' },
-      // ])
+      await bot.api.setMyCommands([
+         { command: 'start', description: 'Запустить бота' },
+         { command: 'help', description: 'Помощь' },
+         { command: 'laboratory', description: 'Лаборатория' },
+         { command: 'fight', description: 'Бой на Арене' },
+      ])
    } catch (e: any) {
       console.warn('⚠️ Не удалось установить команды: таймаут подключения к Telegram API')
    }
