@@ -10,13 +10,17 @@ export const fightCommand = async (ctx: Context) => {
                   [
                      {
                         text: '⚔️ Арена',
-                        web_app: { url: config.urlWebApp },
+                        web_app: { url: `${config.urlWebApp}/arena` },
                      },
                   ],
                ],
             },
          })
       } else {
+         if (!ctx.message?.reply_to_message) {
+            await ctx.reply(`Выполните команду /fight реплаем на сообщение с вашим противником`)
+            return
+         }
          const targetUser = ctx.message?.reply_to_message?.from
          if (targetUser?.id) {
             if (targetUser.is_bot) {
@@ -30,7 +34,7 @@ export const fightCommand = async (ctx: Context) => {
                         [
                            {
                               text: '⚔️ Арена',
-                              web_app: { url: config.urlWebApp },
+                              web_app: { url: `${config.urlWebApp}/arena` },
                            },
                         ],
                      ],
@@ -57,7 +61,7 @@ export const fightCommand = async (ctx: Context) => {
                      [
                         {
                            text: '⚔️ Арена',
-                           web_app: { url: 'https://game.managetlg.com' },
+                           web_app: { url: `${config.urlWebApp}/arena` },
                         },
                      ],
                   ],

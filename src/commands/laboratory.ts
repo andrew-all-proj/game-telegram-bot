@@ -10,7 +10,7 @@ export const laboratoryCommand = async (ctx: Context) => {
                   {
                      text: '🧪 Открыть лабораторию',
                      web_app: {
-                        url: config.urlWebApp,
+                        url: `${config.urlWebApp}/laboratory`,
                      },
                   },
                ],
