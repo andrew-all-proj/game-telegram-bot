@@ -4,6 +4,18 @@ import { startCommand } from './commands/start'
 import { helpCommand } from './commands/help'
 import { laboratoryCommand } from './commands/laboratory'
 import { fightCommand } from './commands/fight'
+import * as gameDb from 'game-db'
+
+async function initDb() {
+   if (!gameDb.AppDataSource.isInitialized) {
+      try {
+         await gameDb.AppDataSource.initialize()
+         console.log('DB connected')
+      } catch (error) {
+         console.log(error)
+      }
+   }
+}
 
 const bot = new Bot(config.botToken)
 
@@ -25,6 +37,7 @@ bot.catch((err) => {
 })
 
 async function main() {
+   await initDb()
    try {
       await bot.api.setMyCommands([
          { command: 'start', description: 'Запустить бота' },
