@@ -9,12 +9,11 @@ export const startCommand = async (ctx: Context) => {
             name: ctx.from?.first_name || 'No name',
             idTelegram: ctx.from?.id,
          }).save()
+         await ctx.reply('Добро пожаловать, Профессор, в MonstroFarm!')
+         return
       }
+      await ctx.reply('C возвращением, Профессор, в MonstroFarm!')
    } catch (e) {
       console.log('Ошибка при создании пользователя:', e)
    }
-
-   await ctx.reply(
-      'Добро пожаловать, Профессор, в MonstroFarm! Вы можете создать своего первого монстра с помощью команды.',
-   )
 }
