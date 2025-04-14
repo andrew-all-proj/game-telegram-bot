@@ -1,11 +1,12 @@
-version: '3.8'
-
 services:
    bot:
       build: .
       container_name: telegram-bot
       restart: always
-      environment:
-         - BOT_TOKEN=${BOT_TOKEN}
       env_file:
          - .env
+      networks:
+         - game-network
+networks:
+   game-network:
+      external: true
