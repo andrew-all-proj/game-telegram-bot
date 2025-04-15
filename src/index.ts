@@ -6,13 +6,22 @@ import { laboratoryCommand } from './commands/laboratory'
 import { fightCommand } from './commands/fight'
 import * as gameDb from 'game-db'
 
-async function initDb() {
-   if (!gameDb.AppDataSource.isInitialized) {
+async function initDb(retries = 5, delay = 2000) {
+   for (let i = 0; i < retries; i++) {
       try {
-         await gameDb.AppDataSource.initialize()
-         console.log('DB connected')
+         if (!gameDb.AppDataSource.isInitialized) {
+            await gameDb.AppDataSource.initialize()
+            console.log('DB connected')
+         }
+         return
       } catch (error) {
-         console.log(error)
+         console.log(`DB connection attempt ${i + 1} failed:`, error)
+         if (i < retries - 1) {
+            await new Promise((res) => setTimeout(res, delay))
+         } else {
+            console.error('All DB connection attempts failed.')
+            throw error
+         }
       }
    }
 }
