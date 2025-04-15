@@ -738,7 +738,7 @@ fsevents@~2.3.2:
 
 "game-db@git+ssh://git@github.com/andrew-all-proj/game-db.git":
   version "0.0.1"
-  resolved "git+ssh://git@github.com/andrew-all-proj/game-db.git#ff45662b6a6f26700c3e3540844a9d9e722cc0d0"
+  resolved "git+ssh://git@github.com/andrew-all-proj/game-db.git#0a29f13e1f60a9325e60155fa390be6f20f945fa"
   dependencies:
     dotenv "^16.5.0"
     pg "^8.14.1"
