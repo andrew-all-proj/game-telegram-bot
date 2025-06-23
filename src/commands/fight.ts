@@ -1,6 +1,8 @@
 import { Context } from 'grammy'
 import config from '../config'
 import * as gameDb from 'game-db'
+import { v4 as uuidv4 } from 'uuid'
+import { redis } from '../redis'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -28,102 +30,129 @@ export const fightCommand = async (ctx: Context) => {
       const opponentFrom = ctx.message.reply_to_message.from
       const challengerFrom = ctx.from
 
-      if (!opponentFrom || !challengerFrom) return
-      if (opponentFrom.id === challengerFrom.id) {
-         await ctx.reply('Нельзя вызвать самого себя на бой')
-         return
-      }
-      if (opponentFrom.is_bot) {
-         await ctx.reply('Нельзя вызвать бота на бой')
-         return
-      }
-
-      const opponentUser = await gameDb.Entities.User.findOne({
-         where: { idTelegram: opponentFrom.id.toString() },
-      })
-
-      if (!opponentUser) {
-         await ctx.reply(
-            `У пользователя ${opponentFrom.first_name} нет лаборатории. Пусть он начнёт с бота ${config.botUserName}`,
-         )
+      if (
+         !opponentFrom ||
+         !challengerFrom ||
+         opponentFrom.id === challengerFrom.id ||
+         opponentFrom.is_bot
+      ) {
+         await ctx.reply('Некорректный вызов')
          return
       }
 
-      const challengerUser = await gameDb.Entities.User.findOne({
-         where: { idTelegram: challengerFrom.id.toString() },
-      })
-
-      if (!challengerUser) {
-         await ctx.reply(`У тебя ещё нет лаборатории. Начни с бота ${config.botUserName}`)
+      const [challengerUser, opponentUser] = await Promise.all([
+         gameDb.Entities.User.findOne({ where: { idTelegram: challengerFrom.id.toString() } }),
+         gameDb.Entities.User.findOne({ where: { idTelegram: opponentFrom.id.toString() } }),
+      ])
+      if (!challengerUser || !opponentUser) {
+         await ctx.reply('У кого-то из вас нет лаборатории')
          return
       }
 
-      const opponentMonster = await gameDb.Entities.Monster.findOne({
-         where: { userId: opponentUser.id, isSelected: true },
-      })
-
-      if (!opponentMonster) {
-         await ctx.reply(`У ${opponentFrom.first_name} нет активного монстра`)
+      const [challengerMonster, opponentMonster] = await Promise.all([
+         gameDb.Entities.Monster.findOne({
+            where: { userId: challengerUser.id, isSelected: true },
+         }),
+         gameDb.Entities.Monster.findOne({ where: { userId: opponentUser.id, isSelected: true } }),
+      ])
+      if (!challengerMonster || !opponentMonster) {
+         await ctx.reply('У кого-то из вас нет активного монстра')
          return
       }
 
-      const challengerMonster = await gameDb.Entities.Monster.findOne({
-         where: { userId: challengerUser.id, isSelected: true },
-      })
-
-      if (!challengerMonster) {
-         await ctx.reply('У тебя нет активного монстра')
-         return
-      }
-
-      const createBattle = await gameDb.Entities.MonsterBattles.create({
-         challengerMonsterId: challengerMonster.id,
-         opponentMonsterId: opponentMonster.id,
-         status: gameDb.datatypes.BattleStatusEnum.PENDING,
-      }).save()
-
-      try {
-         await ctx.api.sendMessage(opponentFrom.id, `⚔️ Вызов от ${challengerFrom.first_name}!`, {
-            reply_markup: {
-               inline_keyboard: [
-                  [
-                     {
-                        text: 'Принять вызов',
-                        web_app: { url: `${config.urlWebApp}/arena/${createBattle.id}` },
-                     },
-                  ],
-               ],
-            },
-         })
-      } catch (err) {
-         await ctx.reply(
-            `Не удалось отправить сообщение ${opponentFrom.first_name}. Убедитесь, что он открыл личку с ботом.`,
-         )
-         return
-      }
-
-      await ctx.reply(
-         `Вызов отправлен ${opponentFrom.first_name}. Ждите его реакции. Если что, напомните ему открыть бот: ${config.botUserName}`,
+      const requestId = `battleReq:${uuidv4()}`
+      await redis.set(
+         requestId,
+         JSON.stringify({
+            challengerMonsterId: challengerMonster.id,
+            opponentMonsterId: opponentMonster.id,
+            challengerIdTelegram: challengerUser.idTelegram,
+            opponentIdTelegram: opponentUser.idTelegram,
+            challengerName: challengerFrom.first_name,
+            opponentName: opponentFrom.first_name,
+            chatId: ctx.chat?.id,
+         }),
+         'EX',
+         300,
       )
 
-      await ctx.api.sendMessage(
-         challengerFrom.id,
-         `⚔️ Бой с ${opponentFrom.first_name} начнётся скоро`,
-         {
-            reply_markup: {
-               inline_keyboard: [
-                  [
-                     {
-                        text: 'Перейти в арену',
-                        web_app: { url: `${config.urlWebApp}/arena/${createBattle.id}` },
-                     },
-                  ],
+      await ctx.api.sendMessage(opponentFrom.id, `⚔️ Вызов от ${challengerFrom.first_name}!`, {
+         reply_markup: {
+            inline_keyboard: [
+               [
+                  { text: '✅ Принять', callback_data: `${requestId}:accept` },
+                  { text: '❌ Отказаться', callback_data: `${requestId}:decline` },
                ],
-            },
+            ],
          },
-      )
+      })
+
+      await ctx.reply(`Вызов отправлен ${opponentFrom.first_name}`)
    } catch (error) {
       console.error('Ошибка в /fight:', error)
       await ctx.reply('Произошла ошибка при выполнении команды /fight')
    }
+}
+
+export const fightCallBack = async (ctx: Context) => {
+   const data = ctx.callbackQuery?.data
+   if (!data?.startsWith('battleReq:')) return
+
+   const [_, requestId, action] = data.split(':')
+   const redisKey = `battleReq:${requestId}`
+   const raw = await redis.get(redisKey)
+   if (!raw) {
+      await ctx.answerCallbackQuery({ text: '⚠️ Истек срок действия заявки', show_alert: true })
+      return
+   }
+
+   const {
+      challengerMonsterId,
+      opponentMonsterId,
+      challengerIdTelegram,
+      opponentIdTelegram,
+      challengerName,
+      opponentName,
+      chatId,
+   } = JSON.parse(raw)
+
+   if (action === 'decline') {
+      await ctx.answerCallbackQuery({ text: 'Вы отказались от боя', show_alert: true })
+
+      await ctx.api.sendMessage(challengerIdTelegram, `❌ ${opponentName} отказался от боя`)
+      if (chatId) {
+         await ctx.api.sendMessage(
+            chatId,
+            `❌ Этот сыкло ${opponentName} отказался от боя против ${challengerName}`,
+         )
+      }
+
+      await redis.del(redisKey)
+      return
+   }
+
+   const battle = await gameDb.Entities.MonsterBattles.create({
+      challengerMonsterId,
+      opponentMonsterId,
+      status: gameDb.datatypes.BattleStatusEnum.PENDING,
+   }).save()
+
+   const url = `${config.urlWebApp}/arena/${battle.id}`
+
+   await ctx.answerCallbackQuery({ text: 'Бой начат! Переходите в арену!' })
+
+   await Promise.all([
+      ctx.api.sendMessage(challengerIdTelegram, `⚔️ Бой начался!`, {
+         reply_markup: {
+            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
+         },
+      }),
+      ctx.api.sendMessage(opponentIdTelegram, `⚔️ Вы приняли вызов!`, {
+         reply_markup: {
+            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
+         },
+      }),
+   ])
+
+   await redis.del(redisKey)
 }
