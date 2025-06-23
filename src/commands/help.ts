@@ -6,8 +6,8 @@ export const helpCommand = async (ctx: Context) => {
          '1. /start - Запустить бота \n' +
          '2. /help - Помощь \n' +
          '3. /create - Создать монстра \n' +
-         '4. /info - Информация о монстре \n' +
-         '5. /battle - Бой с монстром \n' +
+         '4. /my_monster - Информация о монстре \n' +
+         '5. /fight - Бой с монстром \n' +
          '6. /laboratory - Лаборатория \n',
    )
 }

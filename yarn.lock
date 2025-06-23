@@ -736,9 +736,9 @@ fsevents@~2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
-"game-db@git+ssh://git@github.com/andrew-all-proj/game-db.git":
-  version "0.0.1"
-  resolved "git+ssh://git@github.com/andrew-all-proj/game-db.git#0a29f13e1f60a9325e60155fa390be6f20f945fa"
+"game-db@git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.2":
+  version "0.0.2"
+  resolved "git+ssh://git@github.com/andrew-all-proj/game-db.git#85fc4ab005e85e27bdfbfae3c6dc3024670e2be3"
   dependencies:
     dotenv "^16.5.0"
     pg "^8.14.1"

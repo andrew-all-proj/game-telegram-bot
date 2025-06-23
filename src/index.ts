@@ -55,6 +55,7 @@ async function main() {
          { command: 'fight', description: 'Бой на Арене' },
       ])
    } catch (e: any) {
+      console.log(e)
       console.warn('⚠️ Не удалось установить команды: таймаут подключения к Telegram API')
    }
 
