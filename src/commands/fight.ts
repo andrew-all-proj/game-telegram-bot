@@ -10,7 +10,7 @@ export const fightCommand = async (ctx: Context) => {
                inline_keyboard: [
                   [
                      {
-                        text: '⚔️ Арена',
+                        text: '⚔️ Поиск противников',
                         web_app: { url: `${config.urlWebApp}/search-battle` },
                      },
                   ],
@@ -115,7 +115,7 @@ export const fightCommand = async (ctx: Context) => {
                   [
                      {
                         text: 'Перейти в арену',
-                        web_app: { url: `${config.urlWebApp}/arena${createBattle.id}` },
+                        web_app: { url: `${config.urlWebApp}/arena/${createBattle.id}` },
                      },
                   ],
                ],
