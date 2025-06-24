@@ -1,10 +1,17 @@
 import { Bot, GrammyError, HttpError } from 'grammy'
+import { bootstrap } from 'global-agent'
 import config from './config'
+import 'dotenv/config'
 import { startCommand } from './commands/start'
 import { helpCommand } from './commands/help'
 import { laboratoryCommand } from './commands/laboratory'
-import { fightCommand } from './commands/fight'
+import { fightCallBack, fightCommand } from './commands/fight'
 import * as gameDb from 'game-db'
+import Redis from 'ioredis'
+
+if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
+   bootstrap()
+}
 
 async function initDb(retries = 5, delay = 2000) {
    for (let i = 0; i < retries; i++) {
@@ -33,9 +40,10 @@ bot.command('help', helpCommand)
 bot.command('laboratory', laboratoryCommand)
 bot.command('fight', fightCommand)
 
+bot.on('callback_query:data', fightCallBack)
+
 bot.catch((err) => {
    const error = err.ctx
-
    if (error instanceof GrammyError) {
       console.error('Error in request:', error.description)
    } else if (error instanceof HttpError) {
@@ -55,6 +63,7 @@ async function main() {
          { command: 'fight', description: 'Бой на Арене' },
       ])
    } catch (e: any) {
+      console.log(e)
       console.warn('⚠️ Не удалось установить команды: таймаут подключения к Telegram API')
    }
 

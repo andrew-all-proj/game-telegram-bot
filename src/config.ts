@@ -10,4 +10,9 @@ export default {
    botToken: process.env.BOT_TOKEN,
    botUserName: process.env.BOT_USER_NAME,
    urlWebApp: process.env.URL_WEB_APP || 'https://game.managetlg.com',
+   redisConnect: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: Number(process.env.REDIS_PORT) || 6379,
+      password: process.env.REDIS_PASSWORD || undefined,
+   },
 }

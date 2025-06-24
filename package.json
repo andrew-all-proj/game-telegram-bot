@@ -12,12 +12,15 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git",
+    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.2",
     "grammy": "^1.35.1",
+    "ioredis": "^5.6.1",
     "nodemon": "^3.1.9",
     "typeorm": "^0.3.22"
   },
   "devDependencies": {
+    "global-agent": "^3.0.0",
+    "@types/global-agent": "^3.0.0",
     "@types/node": "^22.14.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
