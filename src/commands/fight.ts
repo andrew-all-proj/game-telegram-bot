@@ -41,8 +41,8 @@ export const fightCommand = async (ctx: Context) => {
       }
 
       const [challengerUser, opponentUser] = await Promise.all([
-         gameDb.Entities.User.findOne({ where: { idTelegram: challengerFrom.id.toString() } }),
-         gameDb.Entities.User.findOne({ where: { idTelegram: opponentFrom.id.toString() } }),
+         gameDb.Entities.User.findOne({ where: { telegramId: challengerFrom.id.toString() } }),
+         gameDb.Entities.User.findOne({ where: { telegramId: opponentFrom.id.toString() } }),
       ])
       if (!challengerUser || !opponentUser) {
          await ctx.reply('У кого-то из вас нет лаборатории')
@@ -66,8 +66,8 @@ export const fightCommand = async (ctx: Context) => {
          JSON.stringify({
             challengerMonsterId: challengerMonster.id,
             opponentMonsterId: opponentMonster.id,
-            challengerIdTelegram: challengerUser.idTelegram,
-            opponentIdTelegram: opponentUser.idTelegram,
+            challengerIdTelegram: challengerUser.telegramId,
+            opponentIdTelegram: opponentUser.telegramId,
             challengerName: challengerFrom.first_name,
             opponentName: opponentFrom.first_name,
             chatId: ctx.chat?.id,
@@ -134,6 +134,7 @@ export const fightCallBack = async (ctx: Context) => {
    const battle = await gameDb.Entities.MonsterBattles.create({
       challengerMonsterId,
       opponentMonsterId,
+      chatId: chatId,
       status: gameDb.datatypes.BattleStatusEnum.PENDING,
    }).save()
 

@@ -7,7 +7,6 @@ import { helpCommand } from './commands/help'
 import { laboratoryCommand } from './commands/laboratory'
 import { fightCallBack, fightCommand } from './commands/fight'
 import * as gameDb from 'game-db'
-import Redis from 'ioredis'
 
 if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
    bootstrap()
