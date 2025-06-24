@@ -1,4 +1,5 @@
-import { Bot, GrammyError, HttpError } from 'grammy'
+import express from 'express'
+import { Bot, GrammyError, HttpError, webhookCallback } from 'grammy'
 import { bootstrap } from 'global-agent'
 import config from './config'
 import 'dotenv/config'
@@ -7,8 +8,11 @@ import { helpCommand } from './commands/help'
 import { laboratoryCommand } from './commands/laboratory'
 import { fightCallBack, fightCommand } from './commands/fight'
 import * as gameDb from 'game-db'
+import routes from './routes'
+import { bot } from './botInstance'
 
 if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
+   console.log('Start proxy')
    bootstrap()
 }
 
@@ -32,8 +36,6 @@ async function initDb(retries = 5, delay = 2000) {
    }
 }
 
-const bot = new Bot(config.botToken)
-
 bot.command('start', startCommand)
 bot.command('help', helpCommand)
 bot.command('laboratory', laboratoryCommand)
@@ -54,19 +56,36 @@ bot.catch((err) => {
 
 async function main() {
    await initDb()
-   try {
-      await bot.api.setMyCommands([
-         { command: 'start', description: 'Запустить бота' },
-         { command: 'help', description: 'Помощь' },
-         { command: 'laboratory', description: 'Лаборатория' },
-         { command: 'fight', description: 'Бой на Арене' },
-      ])
-   } catch (e: any) {
-      console.log(e)
-      console.warn('⚠️ Не удалось установить команды: таймаут подключения к Telegram API')
+   await bot.api.setMyCommands([
+      { command: 'start', description: 'Запустить бота' },
+      { command: 'help', description: 'Помощь' },
+      { command: 'laboratory', description: 'Лаборатория' },
+      { command: 'fight', description: 'Бой на Арене' },
+   ])
+
+   const app = express()
+   app.use(express.json())
+
+   app.use('/', routes)
+
+   if (process.env.NODE_ENV === 'production') {
+      app.use('/webhook', webhookCallback(bot, 'express'))
+
+      try {
+         await bot.api.setWebhook(`${config.webhookUrl}/webhook`)
+         console.log(`✅ Webhook установлен: ${config.webhookUrl}/webhook`)
+      } catch (err) {
+         console.error('❌ Не удалось установить webhook:', err)
+      }
+   } else {
+      bot.start()
+      console.log('🤖 Бот запущен в режиме polling')
    }
 
-   await bot.start()
-   console.log('🤖 Бот запущен')
+   const PORT = process.env.PORT || 3000
+   app.listen(PORT, () => {
+      console.log(`🚀 Express сервер запущен на порту ${PORT}`)
+   })
 }
+
 main()
