@@ -41,8 +41,8 @@ export const fightCommand = async (ctx: Context) => {
       }
 
       const [challengerUser, opponentUser] = await Promise.all([
-         gameDb.Entities.User.findOne({ where: { idTelegram: challengerFrom.id.toString() } }),
-         gameDb.Entities.User.findOne({ where: { idTelegram: opponentFrom.id.toString() } }),
+         gameDb.Entities.User.findOne({ where: { telegramId: challengerFrom.id.toString() } }),
+         gameDb.Entities.User.findOne({ where: { telegramId: opponentFrom.id.toString() } }),
       ])
       if (!challengerUser || !opponentUser) {
          await ctx.reply('У кого-то из вас нет лаборатории')
@@ -66,8 +66,8 @@ export const fightCommand = async (ctx: Context) => {
          JSON.stringify({
             challengerMonsterId: challengerMonster.id,
             opponentMonsterId: opponentMonster.id,
-            challengerIdTelegram: challengerUser.idTelegram,
-            opponentIdTelegram: opponentUser.idTelegram,
+            challengerTelegramId: challengerUser.telegramId,
+            opponentTelegramId: opponentUser.telegramId,
             challengerName: challengerFrom.first_name,
             opponentName: opponentFrom.first_name,
             chatId: ctx.chat?.id,
@@ -109,8 +109,8 @@ export const fightCallBack = async (ctx: Context) => {
    const {
       challengerMonsterId,
       opponentMonsterId,
-      challengerIdTelegram,
-      opponentIdTelegram,
+      challengerTelegramId,
+      opponentTelegramId,
       challengerName,
       opponentName,
       chatId,
@@ -119,7 +119,7 @@ export const fightCallBack = async (ctx: Context) => {
    if (action === 'decline') {
       await ctx.answerCallbackQuery({ text: 'Вы отказались от боя', show_alert: true })
 
-      await ctx.api.sendMessage(challengerIdTelegram, `❌ ${opponentName} отказался от боя`)
+      await ctx.api.sendMessage(challengerTelegramId, `❌ ${opponentName} отказался от боя`)
       if (chatId) {
          await ctx.api.sendMessage(
             chatId,
@@ -142,12 +142,12 @@ export const fightCallBack = async (ctx: Context) => {
    await ctx.answerCallbackQuery({ text: 'Бой начат! Переходите в арену!' })
 
    await Promise.all([
-      ctx.api.sendMessage(challengerIdTelegram, `⚔️ Бой начался!`, {
+      ctx.api.sendMessage(challengerTelegramId, `⚔️ Бой начался!`, {
          reply_markup: {
             inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
          },
       }),
-      ctx.api.sendMessage(opponentIdTelegram, `⚔️ Вы приняли вызов!`, {
+      ctx.api.sendMessage(opponentTelegramId, `⚔️ Вы приняли вызов!`, {
          reply_markup: {
             inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
          },
