@@ -2,7 +2,7 @@ import { Context } from 'grammy'
 import config from '../config'
 import * as gameDb from 'game-db'
 import { v4 as uuidv4 } from 'uuid'
-import { redis } from '../redis'
+import { redis } from '../redisInstance'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -134,7 +134,8 @@ export const fightCallBack = async (ctx: Context) => {
    const battle = await gameDb.Entities.MonsterBattles.create({
       challengerMonsterId,
       opponentMonsterId,
-      status: gameDb.datatypes.BattleStatusEnum.PENDING,
+      status: gameDb.datatypes.BattleStatusEnum.ACCEPTED,
+      chatId: chatId,
    }).save()
 
    const url = `${config.urlWebApp}/arena/${battle.id}`
