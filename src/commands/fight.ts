@@ -134,12 +134,9 @@ export const fightCallBack = async (ctx: Context) => {
    const battle = await gameDb.Entities.MonsterBattles.create({
       challengerMonsterId,
       opponentMonsterId,
-      status: gameDb.datatypes.BattleStatusEnum.PENDING,
+      status: gameDb.datatypes.BattleStatusEnum.ACCEPTED,
       chatId: chatId,
    }).save()
-
-   console.log('chatId', chatId)
-   console.log('battle', battle)
 
    const url = `${config.urlWebApp}/arena/${battle.id}`
 
