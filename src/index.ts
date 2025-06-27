@@ -1,5 +1,5 @@
 import express from 'express'
-import { Bot, GrammyError, HttpError, webhookCallback } from 'grammy'
+import { GrammyError, HttpError, webhookCallback } from 'grammy'
 import { bootstrap } from 'global-agent'
 import config from './config'
 import 'dotenv/config'
@@ -9,10 +9,11 @@ import { laboratoryCommand } from './commands/laboratory'
 import { fightCallBack, fightCommand } from './commands/fight'
 import * as gameDb from 'game-db'
 import routes from './routes'
-import { bot } from './botInstance'
+import { bot } from './instance/botInstance'
+import { logger } from './instance/loggerInstance'
 
 if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
-   console.log('Start proxy')
+   logger.info('Start proxy')
    bootstrap()
 }
 
@@ -21,15 +22,15 @@ async function initDb(retries = 5, delay = 2000) {
       try {
          if (!gameDb.AppDataSource.isInitialized) {
             await gameDb.AppDataSource.initialize()
-            console.log('DB connected')
+            logger.info('DB connected')
          }
          return
       } catch (error) {
-         console.log(`DB connection attempt ${i + 1} failed:`, error)
+         logger.error(`DB connection attempt ${i + 1} failed:`, error)
          if (i < retries - 1) {
             await new Promise((res) => setTimeout(res, delay))
          } else {
-            console.error('All DB connection attempts failed.')
+            logger.error('All DB connection attempts failed.')
             throw error
          }
       }
@@ -46,11 +47,11 @@ bot.on('callback_query:data', fightCallBack)
 bot.catch((err) => {
    const error = err.ctx
    if (error instanceof GrammyError) {
-      console.error('Error in request:', error.description)
+      logger.error('Error in request', error)
    } else if (error instanceof HttpError) {
-      console.error('Could not connect to Telegram', error)
+      logger.error('Could not connect to Telegram', error)
    } else {
-      console.error('Unknown error', error)
+      logger.error('Unknown error', error)
    }
 })
 
@@ -73,18 +74,18 @@ async function main() {
 
       try {
          await bot.api.setWebhook(`${config.webhookUrl}/webhook`)
-         console.log(`✅ Webhook установлен: ${config.webhookUrl}/webhook`)
+         logger.info(`Webhook set: ${config.webhookUrl}/webhook`)
       } catch (err) {
-         console.error('❌ Не удалось установить webhook:', err)
+         logger.error('Error create webhook:', err)
       }
    } else {
       bot.start()
-      console.log('🤖 Бот запущен в режиме polling')
+      logger.info('Bot starting polling')
    }
 
    const PORT = process.env.PORT || 3000
    app.listen(PORT, () => {
-      console.log(`🚀 Express сервер запущен на порту ${PORT}`)
+      logger.info(`Express server run port: ${PORT}`)
    })
 }
 

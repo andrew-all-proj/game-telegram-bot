@@ -1,5 +1,6 @@
 import { Context } from 'grammy'
 import * as gameDb from 'game-db'
+import { logger } from '../instance/loggerInstance'
 
 export const startCommand = async (ctx: Context) => {
    try {
@@ -12,10 +13,11 @@ export const startCommand = async (ctx: Context) => {
             telegramId: ctx.from?.id?.toString(),
          }).save()
          await ctx.reply('Добро пожаловать, Профессор, в Mutantorium!')
+         logger.info(`Создан пользователь telegramId: ${ctx.from?.id?.toString()}`)
          return
       }
       await ctx.reply('C возвращением, Профессор, в Mutantorium!')
    } catch (e) {
-      console.log('Ошибка при создании пользователя:', e)
+      logger.error('Ошибка при создании пользователя:', e)
    }
 }

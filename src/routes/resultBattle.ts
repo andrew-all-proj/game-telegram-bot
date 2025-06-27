@@ -1,4 +1,4 @@
-import { bot } from '../botInstance'
+import { bot } from '../instance/botInstance'
 import * as gameDb from 'game-db'
 
 export const resultBattle = async (battleId: string) => {
@@ -9,8 +9,6 @@ export const resultBattle = async (battleId: string) => {
       relations: ['winnerMonster', 'challengerMonster', 'opponentMonster'],
    })
 
-   console.log(gameBattle)
-
    if (!gameBattle) return
 
    const { winnerMonster, challengerMonster, opponentMonster, chatId } = gameBattle
@@ -20,7 +18,6 @@ export const resultBattle = async (battleId: string) => {
    const loserMonster =
       winnerMonster.id === challengerMonster.id ? opponentMonster : challengerMonster
 
-   console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
    if (chatId) {
       await bot.api.sendMessage(
          chatId,
