@@ -2,7 +2,8 @@ import { Context } from 'grammy'
 import config from '../config'
 import * as gameDb from 'game-db'
 import { v4 as uuidv4 } from 'uuid'
-import { redis } from '../redisInstance'
+import { redis } from '../instance/redisInstance'
+import { logger } from '../instance/loggerInstance'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -89,7 +90,7 @@ export const fightCommand = async (ctx: Context) => {
 
       await ctx.reply(`Вызов отправлен ${opponentFrom.first_name}`)
    } catch (error) {
-      console.error('Ошибка в /fight:', error)
+      logger.error('Error commands /fight:', error)
       await ctx.reply('Произошла ошибка при выполнении команды /fight')
    }
 }
