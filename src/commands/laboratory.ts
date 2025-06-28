@@ -1,5 +1,6 @@
 import { Context } from 'grammy'
 import config from '../config'
+import { logger } from '../instance/loggerInstance'
 
 export const laboratoryCommand = async (ctx: Context) => {
    try {
@@ -18,6 +19,6 @@ export const laboratoryCommand = async (ctx: Context) => {
          },
       })
    } catch (error) {
-      console.error('Reply error:', error)
+      logger.error('Reply error:', error)
    }
 }

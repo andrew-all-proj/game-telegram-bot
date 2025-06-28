@@ -1,6 +1,5 @@
 import * as winston from 'winston'
 import { ElasticsearchTransport } from 'winston-elasticsearch'
-import config from '../config'
 
 const transports: winston.transport[] = [
    new winston.transports.Console({
@@ -16,19 +15,35 @@ const transports: winston.transport[] = [
 try {
    const esTransport = new ElasticsearchTransport({
       level: 'info',
+      indexPrefix: 'bot',
+      bufferLimit: 1,
+      format: winston.format.combine(
+         winston.format.timestamp(),
+         winston.format((info) => {
+            info['@timestamp'] = info.timestamp
+            delete info.timestamp
+            return info
+         })(),
+         winston.format.json(),
+      ),
       clientOpts: {
-         node: config.loggerUrl || 'http://localhost:9200',
+         node: process.env.ELASTIC_URL || 'http://localhost:9200',
          auth: {
             username: process.env.ELASTIC_USERNAME || '',
             password: process.env.ELASTIC_PASSWORD || '',
          },
       },
-      indexPrefix: 'bot',
+      ensureIndexTemplate: false,
    })
 
+   esTransport.on('error', (err) => {
+      console.error('ElasticsearchTransport error:', err.message)
+   })
+
+   console.log('Elasticsearch transport initialized')
    transports.push(esTransport)
 } catch (error) {
-   console.warn('⚠️ Elasticsearch transport disabled:', (error as Error).message)
+   console.warn('Elasticsearch transport failed to initialize:', (error as Error).message)
 }
 
 export const logger = winston.createLogger({

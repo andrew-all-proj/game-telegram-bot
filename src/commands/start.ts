@@ -13,11 +13,12 @@ export const startCommand = async (ctx: Context) => {
             telegramId: ctx.from?.id?.toString(),
          }).save()
          await ctx.reply('Добро пожаловать, Профессор, в Mutantorium!')
-         logger.info(`Создан пользователь telegramId: ${ctx.from?.id?.toString()}`)
+         logger.info(`Created user telegramId: ${ctx.from?.id?.toString()}`)
          return
       }
+      logger.info(`Command start user id: ${user.id}`)
       await ctx.reply('C возвращением, Профессор, в Mutantorium!')
    } catch (e) {
-      logger.error('Ошибка при создании пользователя:', e)
+      logger.error('Error create user', e)
    }
 }
