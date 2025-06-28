@@ -16,7 +16,6 @@ export default {
    urlWebApp: process.env.URL_WEB_APP || 'https://game.managetlg.com',
    jwtSecret: process.env.JWT_SECRET,
    webhookUrl: process.env.WEBHOOK_URL!,
-   loggerUrl: process.env.ELASTICSEARCH_NODE,
    redisConnect: {
       host: process.env.REDIS_HOST || 'localhost',
       port: Number(process.env.REDIS_PORT) || 6379,
