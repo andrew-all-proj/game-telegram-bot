@@ -11,6 +11,7 @@ import * as gameDb from 'game-db'
 import routes from './routes'
 import { bot } from './instance/botInstance'
 import { logger } from './instance/loggerInstance'
+import { monsterCommand } from './commands/monster'
 
 if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
    logger.info('Start proxy')
@@ -41,6 +42,7 @@ bot.command('start', startCommand)
 bot.command('help', helpCommand)
 bot.command('laboratory', laboratoryCommand)
 bot.command('fight', fightCommand)
+bot.command('monster', monsterCommand)
 
 bot.on('callback_query:data', fightCallBack)
 
@@ -62,6 +64,7 @@ async function main() {
       { command: 'help', description: 'Помощь' },
       { command: 'laboratory', description: 'Лаборатория' },
       { command: 'fight', description: 'Бой на Арене' },
+      { command: 'monster', description: 'Показать монстра' },
    ])
 
    const app = express()

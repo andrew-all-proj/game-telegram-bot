@@ -1,5 +1,4 @@
 import { Context } from 'grammy'
-import { logger } from '../instance/loggerInstance'
 
 export const helpCommand = async (ctx: Context) => {
    await ctx.reply(
