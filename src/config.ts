@@ -15,6 +15,7 @@ export default {
    botUserName: process.env.BOT_USER_NAME,
    urlWebApp: process.env.URL_WEB_APP || 'https://game.managetlg.com',
    jwtSecret: process.env.JWT_SECRET,
+   fileUrlPrefix: process.env.FILE_URL_PREFIX,
    webhookUrl: process.env.WEBHOOK_URL!,
    redisConnect: {
       host: process.env.REDIS_HOST || 'localhost',
