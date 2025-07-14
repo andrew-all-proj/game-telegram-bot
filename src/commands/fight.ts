@@ -4,6 +4,7 @@ import * as gameDb from 'game-db'
 import { v4 as uuidv4 } from 'uuid'
 import { redis } from '../instance/redisInstance'
 import { logger } from '../instance/loggerInstance'
+import { calculateAndSaveEnergy } from '../functions/calculateAndSaveEnergy'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -45,8 +46,32 @@ export const fightCommand = async (ctx: Context) => {
          gameDb.Entities.User.findOne({ where: { telegramId: challengerFrom.id.toString() } }),
          gameDb.Entities.User.findOne({ where: { telegramId: opponentFrom.id.toString() } }),
       ])
+
       if (!challengerUser || !opponentUser) {
-         await ctx.reply('У кого-то из вас нет лаборатории')
+         if (!challengerUser && !opponentUser) {
+            await ctx.reply('Ни у одного из игроков нет лаборатории')
+         } else if (!challengerUser) {
+            await ctx.reply(`У ${challengerFrom.first_name} нет лаборатории`)
+         } else {
+            await ctx.reply(`У ${opponentFrom.first_name} нет лаборатории`)
+         }
+         return
+      }
+
+      await Promise.all([
+         calculateAndSaveEnergy(opponentUser),
+         calculateAndSaveEnergy(challengerUser),
+      ])
+
+      if (challengerUser.energy < 125) {
+         await ctx.reply('Недостаточно энергии для вызова на бой. Требуется 125 энергии.')
+         return
+      }
+
+      if (opponentUser.energy < 125) {
+         await ctx.reply(
+            `У ${opponentFrom.first_name} недостаточно энергии для боя. Требуется 125 энергии.`,
+         )
          return
       }
 
@@ -54,10 +79,19 @@ export const fightCommand = async (ctx: Context) => {
          gameDb.Entities.Monster.findOne({
             where: { userId: challengerUser.id, isSelected: true },
          }),
-         gameDb.Entities.Monster.findOne({ where: { userId: opponentUser.id, isSelected: true } }),
+         gameDb.Entities.Monster.findOne({
+            where: { userId: opponentUser.id, isSelected: true },
+         }),
       ])
+
       if (!challengerMonster || !opponentMonster) {
-         await ctx.reply('У кого-то из вас нет активного монстра')
+         if (!challengerMonster && !opponentMonster) {
+            await ctx.reply('Ни у одного из игроков нет активного монстра')
+         } else if (!challengerMonster) {
+            await ctx.reply(`У ${challengerUser.name} нет активного монстра`)
+         } else {
+            await ctx.reply(`У ${opponentUser.name} нет активного монстра`)
+         }
          return
       }
 

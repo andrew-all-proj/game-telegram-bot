@@ -39,7 +39,14 @@ export const monsterCommand = async (ctx: Context) => {
 
          try {
             await ctx.replyWithPhoto(imageUrl, {
-               caption: `${isReply ? 'Монстр противника' : 'Ваш монстр'}: ${monster.name}\nУровень: ${monster.level}`,
+               caption: `${isReply ? 'Монстр противника' : 'Ваш монстр'}: ${monster.name}
+               \nУровень: ${monster.level}
+               \nЗдоровье: ${monster.healthPoints}
+               \nВыносливость: ${monster.stamina}
+               \nСила: ${monster.strength}
+               \nЗащита: ${monster.defense}
+               \nУклонение: ${monster.evasion}
+               \nОпыт: ${monster.experiencePoints}`,
             })
          } catch (err) {
             logger.error(`Error sent avatar monster. Url: ${imageUrl}`, err)
