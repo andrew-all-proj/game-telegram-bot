@@ -95,6 +95,20 @@ export const fightCommand = async (ctx: Context) => {
          return
       }
 
+      if (challengerMonster.satiety < 25) {
+         await ctx.reply(
+            'Ваш монстр слишком голоден, чтобы сражаться. Накормите его хотя бы на 25 единиц сытости.',
+         )
+         return
+      }
+
+      if (opponentMonster.satiety < 25) {
+         await ctx.reply(
+            `Монстр ${opponentMonster.name} слишком голоден, чтобы сражаться. Ему нужно накормить его хотя бы на 25 единиц сытости.`,
+         )
+         return
+      }
+
       const requestId = `battleReq:${uuidv4()}`
       await redis.set(
          requestId,

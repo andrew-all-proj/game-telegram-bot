@@ -13,7 +13,7 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.8",
+    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#0.10.9",
     "grammy": "^1.35.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
@@ -36,5 +36,6 @@
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
-  }
+  },
+  "packageManager": "yarn@4.10.2+sha512.0b0e54ad5381f0a35184957bd3ea44e37f5a4fb1960b903b0fb9a3c7c2c009190455c41ef2a1977b1dbd3b72c5f152da696e9c52e2bc78a011b6adea8ee73ba3"
 }
