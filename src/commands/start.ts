@@ -11,6 +11,7 @@ export const startCommand = async (ctx: Context) => {
          await gameDb.Entities.User.create({
             name: ctx.from?.first_name || 'No name',
             telegramId: ctx.from?.id?.toString(),
+            energy: 1000,
          }).save()
          await ctx.reply('Добро пожаловать, Профессор, в Mutantorium!')
          logger.info(`Created user telegramId: ${ctx.from?.id?.toString()}`)
