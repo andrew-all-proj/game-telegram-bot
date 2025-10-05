@@ -8,7 +8,6 @@ FROM base AS deps
 RUN apk add --no-cache git openssh && corepack enable || true
 ENV YARN_NODE_LINKER=node-modules
 
-# SSH known_hosts, чтобы не спрашивало "Are you sure..."
 RUN mkdir -p -m 700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 COPY package.json ./
