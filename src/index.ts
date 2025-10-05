@@ -66,7 +66,8 @@ async function main() {
 
    app.use('/', routes)
 
-   if (process.env.NODE_ENV === 'production') {
+   if (process.env.NODE_ENV === 'productionnn') {
+      //TODO make webhook for prod
       app.use('/webhook', webhookCallback(bot, 'express'))
 
       try {
