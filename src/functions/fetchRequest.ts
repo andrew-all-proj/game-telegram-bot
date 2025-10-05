@@ -29,6 +29,7 @@ export async function fetchRequest<T = any>({
       const response = await axios<T>(config)
       return { data: response.data }
    } catch (err) {
+      s
       const error = err as AxiosError
 
       const status = error.response?.status

@@ -188,6 +188,7 @@ export const fightCallBack = async (ctx: Context) => {
       data: {
          opponentMonsterId: opponentMonsterId,
          challengerMonsterId: challengerMonsterId,
+         chatId: chatId,
       },
    }).catch((error) => logger.error('Fetch result create battle', error))
 
