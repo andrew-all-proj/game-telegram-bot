@@ -2,7 +2,7 @@ name: Build & Push (GHCR, private)
 
 on:
    push:
-      branches: ['testing']
+      branches: ['master', 'testing']
       tags: ['v*']
    workflow_dispatch:
 
@@ -27,11 +27,12 @@ jobs:
            with:
               images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
               tags: |
-                 type=raw,value=latest,enable={{is_default_branch}}
                  type=sha
                  type=ref,event=tag
+                 type=raw,value=latest,enable={{eq branch "master"}}
+                 type=raw,value=testing,enable={{eq branch "testing"}}
 
-         - name: Use SSH key
+         - name: Use SSH key (for private git deps)
            uses: webfactory/ssh-agent@v0.9.0
            with:
               ssh-private-key: ${{ secrets.GH_SSH_KEY }}
