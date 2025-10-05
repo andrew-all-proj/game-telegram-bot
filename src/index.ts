@@ -1,6 +1,5 @@
 import express from 'express'
 import { GrammyError, HttpError, webhookCallback } from 'grammy'
-import { bootstrap } from 'global-agent'
 import config from './config'
 import 'dotenv/config'
 import { startCommand } from './commands/start'
@@ -12,11 +11,6 @@ import routes from './routes'
 import { bot } from './instance/botInstance'
 import { logger } from './instance/loggerInstance'
 import { monsterCommand } from './commands/monster'
-
-if (process.env.GLOBAL_AGENT_HTTP_PROXY) {
-   logger.info('Start proxy')
-   bootstrap()
-}
 
 async function initDb(retries = 5, delay = 2000) {
    for (let i = 0; i < retries; i++) {

@@ -21,12 +21,10 @@
     "nodemon": "^3.1.9",
     "typeorm": "^0.3.22",
     "winston": "^3.17.0",
-    "winston-elasticsearch": "^0.19.0",
-    "global-agent": "^3.0.0"
+    "winston-elasticsearch": "^0.19.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "@types/global-agent": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
