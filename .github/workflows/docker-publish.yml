@@ -25,12 +25,12 @@ jobs:
            id: meta
            uses: docker/metadata-action@v5
            with:
-            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+              images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
               tags: |
-                type=sha
-                type=ref,event=tag
-                type=raw,value=latest,enable={{eq github.ref_name 'master'}}
-                type=raw,value=testing,enable={{eq github.ref_name 'testing'}}
+                 type=sha
+                 type=ref,event=tag
+                 type=raw,value=latest,enable={{eq github.ref_name 'master'}}
+                 type=raw,value=testing,enable={{eq github.ref_name 'testing'}}
 
          - name: Use SSH key (for private git deps)
            uses: webfactory/ssh-agent@v0.9.0
