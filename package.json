@@ -11,6 +11,7 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'"
   },
   "dependencies": {
+    "axios": "^1.12.2",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#0.10.9",

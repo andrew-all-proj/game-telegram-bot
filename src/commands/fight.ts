@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { redis } from '../instance/redisInstance'
 import { logger } from '../instance/loggerInstance'
 import { calculateAndSaveEnergy } from '../functions/calculateAndSaveEnergy'
+import { fetchRequest } from '../functions/fetchRequest'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -180,14 +181,22 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
-   const battle = await gameDb.Entities.MonsterBattles.create({
-      challengerMonsterId,
-      opponentMonsterId,
-      status: gameDb.datatypes.BattleStatusEnum.ACCEPTED,
-      chatId: chatId,
-   }).save()
+   const createBattleResponce = await fetchRequest({
+      url: `http://${config.apiServiceUrl}/battle/create-battle`,
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.internalSecret}` },
+      data: {
+         opponentMonsterId: opponentMonsterId,
+         challengerMonsterId: challengerMonsterId,
+      },
+   }).catch((error) => logger.error('Fetch result create battle', error))
 
-   const url = `${config.urlWebApp}/arena/${battle.id}`
+   if (!createBattleResponce.data?.id || createBattleResponce.data?.id === null) {
+      await ctx.api.sendMessage(chatId, `❌ ошибка создания боя`)
+      return
+   }
+
+   const url = `${config.urlWebApp}/arena/${createBattleResponce.data.id}`
 
    await ctx.answerCallbackQuery({ text: 'Бой начат! Переходите в арену!' })
 

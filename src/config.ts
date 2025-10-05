@@ -16,6 +16,8 @@ export default {
    urlWebApp: process.env.URL_WEB_APP || 'https://game.managetlg.com',
    jwtSecret: process.env.JWT_SECRET,
    fileUrlPrefix: process.env.FILE_URL_PREFIX,
+   internalSecret: process.env.INTERNAL_JWT_SECRET,
+   apiServiceUrl: process.env.API_SERVICE_URL,
    webhookUrl: process.env.WEBHOOK_URL!,
    redisConnect: {
       host: process.env.REDIS_HOST || 'localhost',
