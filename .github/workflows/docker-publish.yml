@@ -30,7 +30,7 @@ jobs:
                  type=sha
                  type=ref,event=tag
                  type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
-                 type=raw,value=testing,enable=${{ github.ref == 'refs/heads/testing' }}
+                 type=raw,value=test,enable=${{ github.ref == 'refs/heads/testing' }}
 
          - name: Use SSH key (for private git deps)
            uses: webfactory/ssh-agent@v0.9.0
