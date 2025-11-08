@@ -49,13 +49,26 @@ export const fightCommand = async (ctx: Context) => {
       ])
 
       if (!challengerUser || !opponentUser) {
+         let text = ''
          if (!challengerUser && !opponentUser) {
-            await ctx.reply('Ни у одного из игроков нет лаборатории')
+            text = 'Ни у одного из игроков нет лаборатории'
          } else if (!challengerUser) {
-            await ctx.reply(`У ${challengerFrom.first_name} нет лаборатории`)
+            text = `У ${challengerFrom.first_name} нет лаборатории`
          } else {
-            await ctx.reply(`У ${opponentFrom.first_name} нет лаборатории`)
+            text = `У ${opponentFrom.first_name} нет лаборатории`
          }
+         await ctx.reply(text, {
+            reply_markup: {
+               inline_keyboard: [
+                  [
+                     {
+                        text: 'Открыть Mutantorium',
+                        url: config.deepLinkWebApp,
+                     },
+                  ],
+               ],
+            },
+         })
          return
       }
 
@@ -86,13 +99,26 @@ export const fightCommand = async (ctx: Context) => {
       ])
 
       if (!challengerMonster || !opponentMonster) {
+         let text = ''
          if (!challengerMonster && !opponentMonster) {
-            await ctx.reply('Ни у одного из игроков нет активного монстра')
+            text = 'Ни у одного из игроков нет активного монстра. Создайте себе монстров'
          } else if (!challengerMonster) {
-            await ctx.reply(`У ${challengerUser.name} нет активного монстра`)
+            text = `У ${challengerUser.name} нет активного монстра. Создайте себе монстра`
          } else {
-            await ctx.reply(`У ${opponentUser.name} нет активного монстра`)
+            text = `У ${opponentUser.name} нет активного монстра. Создайте себе монстра`
          }
+         await ctx.reply(text, {
+            reply_markup: {
+               inline_keyboard: [
+                  [
+                     {
+                        text: 'Открыть Mutantorium',
+                        url: config.deepLinkWebApp,
+                     },
+                  ],
+               ],
+            },
+         })
          return
       }
 
