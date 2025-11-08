@@ -236,7 +236,7 @@ export const fightCallBack = async (ctx: Context) => {
 
    const url = `${config.deepLinkWebApp}?startapp=arena-${createBattleResponce.data.id}`
 
-   await ctx.reply(`⚔️ Бой начался! Нажмите кнопку ниже, чтобы перейти в арену. ${url}`, {
+   await ctx.reply(`⚔️ Бой начался! Нажмите кнопку ниже, чтобы перейти в арену`, {
       reply_markup: {
          inline_keyboard: [
             [
