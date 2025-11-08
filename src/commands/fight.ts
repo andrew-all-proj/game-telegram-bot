@@ -164,7 +164,7 @@ export const fightCommand = async (ctx: Context) => {
          300,
       )
 
-      await ctx.api.sendMessage(opponentFrom.id, `⚔️ Вызов от ${challengerFrom.first_name}!`, {
+      await ctx.reply(`⚔️ Вызов от ${challengerFrom.first_name} к ${opponentFrom.first_name}!`, {
          reply_markup: {
             inline_keyboard: [
                [
@@ -174,8 +174,6 @@ export const fightCommand = async (ctx: Context) => {
             ],
          },
       })
-
-      await ctx.reply(`Вызов отправлен ${opponentFrom.first_name}`)
    } catch (error) {
       logger.error('Error commands /fight:', error)
       await ctx.reply('Произошла ошибка при выполнении команды /fight')
@@ -197,17 +195,18 @@ export const fightCallBack = async (ctx: Context) => {
    const {
       challengerMonsterId,
       opponentMonsterId,
-      challengerTelegramId,
       opponentTelegramId,
       challengerName,
       opponentName,
       chatId,
    } = JSON.parse(raw)
 
+   if (opponentTelegramId !== ctx.from?.id.toString()) {
+      return
+   }
+
    if (action === 'decline') {
       await ctx.answerCallbackQuery({ text: 'Вы отказались от боя', show_alert: true })
-
-      await ctx.api.sendMessage(challengerTelegramId, `❌ ${opponentName} отказался от боя`)
       if (chatId) {
          await ctx.api.sendMessage(
             chatId,
@@ -235,22 +234,17 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
-   const url = `${config.urlWebApp}/arena/${createBattleResponce.data.id}`
-
-   await ctx.answerCallbackQuery({ text: 'Бой начат! Переходите в арену!' })
-
-   await Promise.all([
-      ctx.api.sendMessage(challengerTelegramId, `⚔️ Бой начался!`, {
-         reply_markup: {
-            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
-         },
-      }),
-      ctx.api.sendMessage(opponentTelegramId, `⚔️ Вы приняли вызов!`, {
-         reply_markup: {
-            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
-         },
-      }),
-   ])
-
-   await redis.del(redisKey)
+   await ctx.reply('⚔️ Бой начался! Нажмите кнопку ниже, чтобы перейти в арену.', {
+      reply_markup: {
+         inline_keyboard: [
+            [
+               {
+                  text: 'Арена ⚔️',
+                  url: `${config.deepLinkWebApp}?startapp=arena/${createBattleResponce.data.id}`,
+               },
+            ],
+         ],
+      },
+   }),
+      await redis.del(redisKey)
 }
