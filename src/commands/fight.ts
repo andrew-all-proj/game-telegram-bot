@@ -240,11 +240,12 @@ export const fightCallBack = async (ctx: Context) => {
             [
                {
                   text: 'Арена ⚔️',
-                  url: `${config.deepLinkWebApp}?startapp=arena/${createBattleResponce.data.id}`,
+                  url: `${config.deepLinkWebApp}?startapp=${encodeURIComponent(`arena/${createBattleResponce.data.id}`)}`,
                },
             ],
          ],
       },
-   }),
-      await redis.del(redisKey)
+   })
+
+   await redis.del(redisKey)
 }
