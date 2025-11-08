@@ -144,6 +144,18 @@ export const fightCommand = async (ctx: Context) => {
       if (opponentMonster.satiety < 25) {
          await ctx.reply(
             `Монстр ${opponentMonster.name} слишком голоден, чтобы сражаться. Ему нужно накормить. Минимум 25 единиц сытости.`,
+            {
+               reply_markup: {
+                  inline_keyboard: [
+                     [
+                        {
+                           text: 'Покормить монстра',
+                           url: `${config.deepLinkWebApp}?startapp=food-menu`,
+                        },
+                     ],
+                  ],
+               },
+            },
          )
          return
       }
