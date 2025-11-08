@@ -96,10 +96,24 @@ export const monsterCommand = async (ctx: Context) => {
          .getOne()
 
       if (!monster) {
-         await ctx.reply(isReply ? 'У противника нет монстра 🥲' : 'У вас нет монстра 🥲')
+         const text = isReply
+            ? 'У противника нет монстра 🥲\n\nСоздать монстра можно в мини-игре:'
+            : 'У вас нет монстра 🥲\n\nСначала создайте монстра в мини-игре:'
+         await ctx.reply(text, {
+            reply_markup: {
+               inline_keyboard: [
+                  [
+                     {
+                        text: 'Открыть Mutantorium',
+                        url: config.deepLinkWebApp,
+                     },
+                  ],
+               ],
+            },
+         })
+
          return
       }
-
       const caption = buildMonsterCaption(monster, isReply)
 
       const imageFile = monster.files?.find(

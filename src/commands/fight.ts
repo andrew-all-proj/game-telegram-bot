@@ -105,7 +105,7 @@ export const fightCommand = async (ctx: Context) => {
 
       if (opponentMonster.satiety < 25) {
          await ctx.reply(
-            `Монстр ${opponentMonster.name} слишком голоден, чтобы сражаться. Ему нужно накормить его хотя бы на 25 единиц сытости.`,
+            `Монстр ${opponentMonster.name} слишком голоден, чтобы сражаться. Ему нужно накормить. Минимум 25 единиц сытости.`,
          )
          return
       }
