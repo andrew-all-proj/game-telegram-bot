@@ -11,6 +11,7 @@ import routes from './routes'
 import { bot } from './instance/botInstance'
 import { logger } from './instance/loggerInstance'
 import { monsterCommand } from './commands/monster'
+import { battleStatsCommand } from './commands/battle-stats'
 
 async function initDb(retries = 5, delay = 2000) {
    for (let i = 0; i < retries; i++) {
@@ -37,6 +38,7 @@ bot.command('help', helpCommand)
 bot.command('laboratory', laboratoryCommand)
 bot.command('fight', fightCommand)
 bot.command('monster', monsterCommand)
+bot.command('battle_stats', battleStatsCommand)
 
 bot.on('callback_query:data', fightCallBack)
 
@@ -59,6 +61,7 @@ async function main() {
       { command: 'laboratory', description: 'Лаборатория' },
       { command: 'fight', description: 'Бой на Арене' },
       { command: 'monster', description: 'Показать монстра' },
+      { command: 'battle_stats', description: 'Статистика боёв за сегодня' },
    ])
 
    const app = express()
