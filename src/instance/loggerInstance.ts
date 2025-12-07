@@ -6,7 +6,15 @@ const transports: winston.transport[] = [
       format: winston.format.combine(
          winston.format.timestamp(),
          winston.format.printf(({ level, message, timestamp }) => {
-            return `[${timestamp}] ${level.toUpperCase()}: ${message}`
+            const ts =
+               typeof timestamp === 'string'
+                  ? timestamp
+                  : timestamp instanceof Date
+                    ? timestamp.toISOString()
+                    : new Date().toISOString()
+            const msg = typeof message === 'string' ? message : JSON.stringify(message)
+            const lvl = typeof level === 'string' ? level.toUpperCase() : String(level)
+            return `[${ts}] ${lvl}: ${msg}`
          }),
       ),
    }),

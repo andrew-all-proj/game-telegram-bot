@@ -14,8 +14,11 @@ export default {
    botToken: process.env.BOT_TOKEN,
    botUserName: process.env.BOT_USER_NAME,
    urlWebApp: process.env.URL_WEB_APP || 'https://game.managetlg.com',
+   deepLinkWebApp: process.env.DEEP_LINK_WEB_APP || 'https://t.me/MyGameeeABot/Game',
    jwtSecret: process.env.JWT_SECRET,
    fileUrlPrefix: process.env.FILE_URL_PREFIX,
+   internalSecret: process.env.INTERNAL_JWT_SECRET,
+   apiServiceUrl: process.env.API_SERVICE_URL,
    webhookUrl: process.env.WEBHOOK_URL!,
    redisConnect: {
       host: process.env.REDIS_HOST || 'localhost',

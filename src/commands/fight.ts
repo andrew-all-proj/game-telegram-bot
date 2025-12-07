@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { redis } from '../instance/redisInstance'
 import { logger } from '../instance/loggerInstance'
 import { calculateAndSaveEnergy } from '../functions/calculateAndSaveEnergy'
+import { fetchRequest } from '../functions/fetchRequest'
 
 export const fightCommand = async (ctx: Context) => {
    try {
@@ -48,13 +49,26 @@ export const fightCommand = async (ctx: Context) => {
       ])
 
       if (!challengerUser || !opponentUser) {
+         let text = ''
          if (!challengerUser && !opponentUser) {
-            await ctx.reply('Ни у одного из игроков нет лаборатории')
+            text = 'Ни у одного из игроков нет лаборатории'
          } else if (!challengerUser) {
-            await ctx.reply(`У ${challengerFrom.first_name} нет лаборатории`)
+            text = `У ${challengerFrom.first_name} нет лаборатории`
          } else {
-            await ctx.reply(`У ${opponentFrom.first_name} нет лаборатории`)
+            text = `У ${opponentFrom.first_name} нет лаборатории`
          }
+         await ctx.reply(text, {
+            reply_markup: {
+               inline_keyboard: [
+                  [
+                     {
+                        text: 'Открыть Mutantorium',
+                        url: config.deepLinkWebApp,
+                     },
+                  ],
+               ],
+            },
+         })
          return
       }
 
@@ -85,13 +99,64 @@ export const fightCommand = async (ctx: Context) => {
       ])
 
       if (!challengerMonster || !opponentMonster) {
+         let text = ''
          if (!challengerMonster && !opponentMonster) {
-            await ctx.reply('Ни у одного из игроков нет активного монстра')
+            text = 'Ни у одного из игроков нет активного монстра. Создайте себе монстров'
          } else if (!challengerMonster) {
-            await ctx.reply(`У ${challengerUser.name} нет активного монстра`)
+            text = `У ${challengerUser.name} нет активного монстра. Создайте себе монстра`
          } else {
-            await ctx.reply(`У ${opponentUser.name} нет активного монстра`)
+            text = `У ${opponentUser.name} нет активного монстра. Создайте себе монстра`
          }
+         await ctx.reply(text, {
+            reply_markup: {
+               inline_keyboard: [
+                  [
+                     {
+                        text: 'Открыть Mutantorium',
+                        url: config.deepLinkWebApp,
+                     },
+                  ],
+               ],
+            },
+         })
+         return
+      }
+
+      if (challengerMonster.satiety < 25) {
+         await ctx.reply(
+            'Ваш монстр слишком голоден, чтобы сражаться. Накормите его хотя бы на 25 единиц сытости.',
+            {
+               reply_markup: {
+                  inline_keyboard: [
+                     [
+                        {
+                           text: 'Покормить монстра',
+                           url: `${config.deepLinkWebApp}?startapp=food-menu`,
+                        },
+                     ],
+                  ],
+               },
+            },
+         )
+         return
+      }
+
+      if (opponentMonster.satiety < 25) {
+         await ctx.reply(
+            `Монстр ${opponentMonster.name} слишком голоден, чтобы сражаться. Ему нужно накормить. Минимум 25 единиц сытости.`,
+            {
+               reply_markup: {
+                  inline_keyboard: [
+                     [
+                        {
+                           text: 'Покормить монстра',
+                           url: `${config.deepLinkWebApp}?startapp=food-menu`,
+                        },
+                     ],
+                  ],
+               },
+            },
+         )
          return
       }
 
@@ -111,7 +176,7 @@ export const fightCommand = async (ctx: Context) => {
          300,
       )
 
-      await ctx.api.sendMessage(opponentFrom.id, `⚔️ Вызов от ${challengerFrom.first_name}!`, {
+      await ctx.reply(`⚔️ Вызов от ${challengerFrom.first_name} к ${opponentFrom.first_name}!`, {
          reply_markup: {
             inline_keyboard: [
                [
@@ -121,8 +186,6 @@ export const fightCommand = async (ctx: Context) => {
             ],
          },
       })
-
-      await ctx.reply(`Вызов отправлен ${opponentFrom.first_name}`)
    } catch (error) {
       logger.error('Error commands /fight:', error)
       await ctx.reply('Произошла ошибка при выполнении команды /fight')
@@ -141,20 +204,30 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
+   type BattleRequestPayload = {
+      challengerMonsterId: string
+      opponentMonsterId: string
+      opponentTelegramId: string
+      challengerName: string
+      opponentName: string
+      chatId?: number
+   }
+
    const {
       challengerMonsterId,
       opponentMonsterId,
-      challengerTelegramId,
       opponentTelegramId,
       challengerName,
       opponentName,
       chatId,
-   } = JSON.parse(raw)
+   } = JSON.parse(raw) as BattleRequestPayload
+
+   if (opponentTelegramId !== ctx.from?.id.toString()) {
+      return
+   }
 
    if (action === 'decline') {
       await ctx.answerCallbackQuery({ text: 'Вы отказались от боя', show_alert: true })
-
-      await ctx.api.sendMessage(challengerTelegramId, `❌ ${opponentName} отказался от боя`)
       if (chatId) {
          await ctx.api.sendMessage(
             chatId,
@@ -166,29 +239,41 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
-   const battle = await gameDb.Entities.MonsterBattles.create({
-      challengerMonsterId,
-      opponentMonsterId,
-      status: gameDb.datatypes.BattleStatusEnum.ACCEPTED,
-      chatId: chatId,
-   }).save()
+   const createBattleResponce = await fetchRequest<{ id: string | number }>({
+      url: `http://${config.apiServiceUrl}/battle/create-battle`,
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.internalSecret}` },
+      data: {
+         opponentMonsterId: opponentMonsterId,
+         challengerMonsterId: challengerMonsterId,
+         chatId: chatId,
+      },
+   })
 
-   const url = `${config.urlWebApp}/arena/${battle.id}`
+   if (createBattleResponce.error || !createBattleResponce.data?.id) {
+      if (chatId) {
+         await ctx.api.sendMessage(chatId, `❌ ошибка создания боя`)
+      }
+      if (createBattleResponce.error) {
+         logger.error('Fetch result create battle', createBattleResponce.error)
+      }
+      return
+   }
 
-   await ctx.answerCallbackQuery({ text: 'Бой начат! Переходите в арену!' })
+   const url = `${config.deepLinkWebApp}?startapp=arena-${createBattleResponce.data.id}`
 
-   await Promise.all([
-      ctx.api.sendMessage(challengerTelegramId, `⚔️ Бой начался!`, {
-         reply_markup: {
-            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
-         },
-      }),
-      ctx.api.sendMessage(opponentTelegramId, `⚔️ Вы приняли вызов!`, {
-         reply_markup: {
-            inline_keyboard: [[{ text: 'Перейти в арену', web_app: { url } }]],
-         },
-      }),
-   ])
+   await ctx.reply(`⚔️ Бой начался! Нажмите кнопку ниже, чтобы перейти в арену`, {
+      reply_markup: {
+         inline_keyboard: [
+            [
+               {
+                  text: 'Арена ⚔️',
+                  url: url,
+               },
+            ],
+         ],
+      },
+   })
 
    await redis.del(redisKey)
 }
