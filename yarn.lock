@@ -2374,15 +2374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"game-db@git+https://github.com/andrew-all-proj/game-db.git#0.10.9":
+"game-db@https://codeload.github.com/andrew-all-proj/game-db/tar.gz/0427eaaf57108e8e299bb6f8a66bc0f202d7be1c":
   version: 0.0.2
-  resolution: "game-db@git+https://github.com/andrew-all-proj/game-db.git#commit=0427eaaf57108e8e299bb6f8a66bc0f202d7be1c"
+  resolution: "game-db@https://codeload.github.com/andrew-all-proj/game-db/tar.gz/0427eaaf57108e8e299bb6f8a66bc0f202d7be1c"
   dependencies:
     dotenv: "npm:^16.5.0"
     pg: "npm:^8.14.1"
     reflect-metadata: "npm:^0.2.2"
     typeorm: "npm:0.3.22"
-  checksum: 10c0/38c55edff9fb1967b28152e8f199c99ed8da0c0b480af58413874efea4e13dd3a4a09c398c47fe891d5f04e95ec25ab3e5eb648bf6099e4964ddad90192b5858
+  checksum: 10c0/2110db2d1258bb4313827cf15087d397250c692a26e96adc301bb64a88b3fb99c7a61c9c664d176f8a951aab4a61b73c482013e6dcdea6346995ee9902e7c8f3
   languageName: node
   linkType: hard
 
@@ -2402,7 +2402,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.5.4"
     eslint-plugin-unused-imports: "npm:^4.1.4"
     express: "npm:^5.1.0"
-    game-db: "git+https://github.com/andrew-all-proj/game-db.git#0.10.9"
+    game-db: "https://codeload.github.com/andrew-all-proj/game-db/tar.gz/0427eaaf57108e8e299bb6f8a66bc0f202d7be1c"
     grammy: "npm:^1.35.1"
     ioredis: "npm:^5.6.1"
     jsonwebtoken: "npm:^9.0.2"
