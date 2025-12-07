@@ -2,6 +2,7 @@
 
 FROM node:20-alpine AS base
 WORKDIR /app
+ENV GIT_CONFIG_PARAMETERS= GIT_CONFIG_COUNT=0
 
 # -------- deps ----------
 FROM base AS deps
