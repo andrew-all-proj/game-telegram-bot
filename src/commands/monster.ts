@@ -4,7 +4,7 @@ import { logger } from '../instance/loggerInstance'
 import axios from 'axios'
 import config from '../config'
 
-function buildMonsterCaption(monster: any, isReply: boolean): string {
+function buildMonsterCaption(monster: gameDb.Entities.Monster, isReply: boolean): string {
    return `${isReply ? 'Монстр противника' : 'Ваш монстр'}: ${monster.name}
 Уровень: ${monster.level}
 Здоровье: ${monster.healthPoints}
@@ -48,10 +48,10 @@ async function sendMonsterPhotoByUrlAndSave(
          caption,
       })
 
-      const photos = (sentMsg as any).photo
+      const photos = sentMsg.photo ?? []
       if (Array.isArray(photos) && photos.length > 0) {
          const biggest = photos[photos.length - 1]
-         const newTelegramId = biggest.file_id as string | undefined
+         const newTelegramId = biggest.file_id
 
          if (newTelegramId && imageFile.id) {
             try {
@@ -117,9 +117,9 @@ export const monsterCommand = async (ctx: Context) => {
       const caption = buildMonsterCaption(monster, isReply)
 
       const imageFile = monster.files?.find(
-         (f: any) =>
-            f.fileType === gameDb.datatypes.FileTypeEnum.IMAGE &&
-            f.contentType === gameDb.datatypes.ContentTypeEnum.AVATAR_MONSTER,
+         (file) =>
+            file.fileType === gameDb.datatypes.FileTypeEnum.IMAGE &&
+            file.contentType === gameDb.datatypes.ContentTypeEnum.AVATAR_MONSTER,
       )
 
       let sentWithPhoto = false

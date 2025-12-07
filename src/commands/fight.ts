@@ -204,6 +204,15 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
+   type BattleRequestPayload = {
+      challengerMonsterId: string
+      opponentMonsterId: string
+      opponentTelegramId: string
+      challengerName: string
+      opponentName: string
+      chatId?: number
+   }
+
    const {
       challengerMonsterId,
       opponentMonsterId,
@@ -211,7 +220,7 @@ export const fightCallBack = async (ctx: Context) => {
       challengerName,
       opponentName,
       chatId,
-   } = JSON.parse(raw)
+   } = JSON.parse(raw) as BattleRequestPayload
 
    if (opponentTelegramId !== ctx.from?.id.toString()) {
       return
@@ -230,7 +239,7 @@ export const fightCallBack = async (ctx: Context) => {
       return
    }
 
-   const createBattleResponce = await fetchRequest({
+   const createBattleResponce = await fetchRequest<{ id: string | number }>({
       url: `http://${config.apiServiceUrl}/battle/create-battle`,
       method: 'POST',
       headers: { Authorization: `Bearer ${config.internalSecret}` },
@@ -239,10 +248,15 @@ export const fightCallBack = async (ctx: Context) => {
          challengerMonsterId: challengerMonsterId,
          chatId: chatId,
       },
-   }).catch((error) => logger.error('Fetch result create battle', error))
+   })
 
-   if (!createBattleResponce.data?.id || createBattleResponce.data?.id === null) {
-      await ctx.api.sendMessage(chatId, `❌ ошибка создания боя`)
+   if (createBattleResponce.error || !createBattleResponce.data?.id) {
+      if (chatId) {
+         await ctx.api.sendMessage(chatId, `❌ ошибка создания боя`)
+      }
+      if (createBattleResponce.error) {
+         logger.error('Fetch result create battle', createBattleResponce.error)
+      }
       return
    }
 

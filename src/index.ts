@@ -80,7 +80,7 @@ async function main() {
          logger.error('Error create webhook:', err)
       }
    } else {
-      bot.start()
+      void bot.start()
       logger.info('Bot starting polling')
    }
 
@@ -90,4 +90,4 @@ async function main() {
    })
 }
 
-main()
+void main()

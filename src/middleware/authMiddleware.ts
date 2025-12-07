@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import config from '../config'
 
+type AuthedRequest = Request & { user?: string | jwt.JwtPayload }
+
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
    const authHeader = req.headers.authorization
 
@@ -14,9 +16,9 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 
    try {
       const decoded = jwt.verify(token, config.jwtSecret)
-      ;(req as any).user = decoded
+      ;(req as AuthedRequest).user = decoded
       next()
-   } catch (err) {
+   } catch {
       res.status(403).json({ error: 'Forbidden' })
       return
    }

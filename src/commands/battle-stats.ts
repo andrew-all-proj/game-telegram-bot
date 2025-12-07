@@ -54,6 +54,6 @@ export const battleStatsCommand = async (ctx: Context) => {
       )
    } catch (e) {
       logger.error(e)
-      ctx.reply('Произошла ошибка при запросе статистики')
+      await ctx.reply('Произошла ошибка при запросе статистики')
    }
 }
