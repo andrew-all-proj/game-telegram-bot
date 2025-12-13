@@ -7,6 +7,7 @@
 - Node.js 20+, Corepack (yarn 4), Git (зависимость `game-db` ставится из публичного HTTPS-репозитория)
 - PostgreSQL и Redis
 - Telegram Bot API токен
+- RabbitMQ (очередь с результатами боёв)
 
 ## Настройка окружения
 
@@ -19,6 +20,7 @@
    - `ELASTICSEARCH_NODE`, `ELASTIC_USERNAME`, `ELASTIC_PASSWORD`
    - `GLOBAL_AGENT_HTTP_PROXY` (опционально для прокси)
    - `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
+   - `RABBITMQ_URL`, `RABBITMQ_TELEGRAM_QUEUE`
 
 ## Локальный запуск
 
@@ -29,6 +31,12 @@ yarn start         # tsc + nodemon, сервер на http://localhost:3000
 ```
 
 В режиме разработки бот работает через long polling (в вебхуки уходит только при `NODE_ENV=productionnn`).
+
+## RabbitMQ
+
+- Подключение идёт по `RABBITMQ_URL` (по умолчанию `amqp://localhost`).
+- Очередь событий Telegram задаётся `RABBITMQ_TELEGRAM_QUEUE` (по умолчанию `telegram-queue`). Туда можно публиковать разные события.
+- События маршрутизируются по `pattern` (как в NestJS). Для `battle.completed` консьюмер ожидает `battleId` (подойдут ключи `battleId`/`battle_id`/`id` в корне или в `data`). Добавлять новые уведомления — просто допишите обработчик в `handlers` в `src/services/battleResultConsumer.ts`.
 
 ## Сборка
 

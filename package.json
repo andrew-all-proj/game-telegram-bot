@@ -12,6 +12,7 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,js,json,md}'"
   },
   "dependencies": {
+    "amqplib": "^0.10.5",
     "axios": "^1.12.2",
     "dotenv": "^16.4.7",
     "eslint-plugin-prettier": "^5.5.4",
@@ -24,9 +25,11 @@
     "typeorm": "^0.3.22",
     "typescript-eslint": "^8.48.1",
     "winston": "^3.17.0",
-    "winston-elasticsearch": "^0.19.0"
+    "winston-elasticsearch": "^0.19.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.8",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",

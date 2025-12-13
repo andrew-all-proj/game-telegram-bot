@@ -25,4 +25,8 @@ export default {
       port: Number(process.env.REDIS_PORT) || 6379,
       password: process.env.REDIS_PASSWORD || undefined,
    },
+   rabbitMq: {
+      url: `amqp://${encodeURIComponent(process.env.RABBITMQ_USER || 'guest')}:${encodeURIComponent(process.env.RABBITMQ_PASSWORD || 'guest')}@${process.env.RABBITMQ_HOST || 'localhost'}:${Number(process.env.RABBITMQ_PORT) || 5672}`,
+      queue: process.env.RABBITMQ_QUEUE,
+   },
 }

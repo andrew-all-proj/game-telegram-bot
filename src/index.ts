@@ -12,6 +12,7 @@ import { bot } from './instance/botInstance'
 import { logger } from './instance/loggerInstance'
 import { monsterCommand } from './commands/monster'
 import { battleStatsCommand } from './commands/battle-stats'
+import { startNotificationConsumer } from './services/notificationConsumer'
 
 async function initDb(retries = 5, delay = 2000) {
    for (let i = 0; i < retries; i++) {
@@ -55,6 +56,11 @@ bot.catch((err) => {
 
 async function main() {
    await initDb()
+   try {
+      await startNotificationConsumer()
+   } catch (error) {
+      logger.error('Failed to start RabbitMQ consumer', error)
+   }
    await bot.api.setMyCommands([
       { command: 'start', description: 'Запустить бота' },
       { command: 'help', description: 'Помощь' },
