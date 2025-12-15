@@ -3,10 +3,12 @@ import config from '../../config'
 import { logger } from '../../instance/loggerInstance'
 import { getRabbitChannel } from '../../instance/rabbitMqInstance'
 import { battleCompletedHandler } from './handlers/battleCompleted'
+import { notificationTelegramHandler } from './handlers/notificationTelegram'
 import { NotificationHandler, ParsedMessage } from './types'
 
 const handlers: Record<string, NotificationHandler> = {
    'battle.completed': battleCompletedHandler,
+   'notification.telegram': notificationTelegramHandler,
 }
 
 function parseMessage(message: ConsumeMessage): ParsedMessage {
@@ -36,7 +38,6 @@ export async function startNotificationConsumer() {
    await channel.consume(
       queue,
       async (message) => {
-         console.log('Using RabbitMQ queue:', message)
          if (!message) return
 
          const parsed = parseMessage(message)
@@ -62,7 +63,6 @@ export async function startNotificationConsumer() {
          }
 
          try {
-            console.log('Handling message with pattern:', parsed)
             await handler(parsed)
             channel.ack(message)
          } catch (error) {
